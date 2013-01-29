@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
+
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/hello" />
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/getlocation"
+        android:text="getlocation"
+        ></Button>
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/changeWallpaper"
+        android:text="Change Wallpaper">
+        
+    </Button>
+     <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/StopHandler"
+        android:text="Stop">
+        
+    </Button>
+
+     <EditText
+         android:id="@+id/cityName"
+         android:layout_width="fill_parent"
+         android:layout_height="wrap_content" 
+         >
+     </EditText>
+     <Button
+         android:id="@+id/checkCityBt"
+         android:layout_height="wrap_content"
+         android:layout_width="wrap_content"
+         android:text="CheckCity">    
+     </Button>
+
+</LinearLayout>

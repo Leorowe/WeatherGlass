@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">天气动态壁纸</string>
+    <string name="nolocate">亲，找不到你的位置，请输入城市的拼音</string>
+	<string name="cityNameDialog">请输入所在城市的拼音</string>
+	<string name="submit">设置</string>
+	<string name="cancel">取消</string>
+	<string name="noTime">你还没设置刷新的时间</string>
+	<string name="DialogTimeTitle">设置刷新的时间</string>
+	
+	<string name="location">定位您的位置</string> 
+	<string name="changeWallpaper">开启定时更换壁纸</string>
+	<string name="stopChange">关闭定时更换壁纸</string>
+	<string name="setRefreshTime">设置刷新时间</string>
+	<string name="header1">天气</string>
+	<string name="header2">动态壁纸</string>
+	<string name="findPosition">已经定位到您所在的城市</string>
+	<string name="implySetTime">设置刷新时间（单位为小时）</string>
+	<string name="openNetwork">请开启移动网络</string>
+</resources>

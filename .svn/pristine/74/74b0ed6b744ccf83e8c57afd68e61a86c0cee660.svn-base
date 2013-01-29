@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="hello">Hello World, Weather4WallpaperActivity!</string>
+    <string name="app_name">Weather4Wallpaper</string>
+     <string name="nolocate">Can not find position!Please input city name.</string>
+
+</resources>

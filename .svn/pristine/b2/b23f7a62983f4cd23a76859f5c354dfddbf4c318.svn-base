@@ -1,0 +1,51 @@
+package com.leo.rowe;
+
+import java.util.Calendar;
+
+import android.app.Activity;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.app.Service;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.os.IBinder;
+
+public class bootService extends Service {
+
+	private Calendar c=null;
+	private int HOUR=3600;
+	SharedPreferences conf;
+	SharedPreferences.Editor editor;
+	
+	public void onCreate(){
+		c=Calendar.getInstance();
+		System.out.println("bootService onCreate()!");
+	    conf=getSharedPreferences("conf", MODE_PRIVATE);
+		
+	}
+	public void onStart(Intent intent,int startId){
+		super.onStart(intent, startId);
+		System.out.println("bootService onStart!");
+		Intent intent1=new Intent(bootService.this,alarmReceiver.class);
+		//which class will get the broadcast
+                  // TODO Auto-generated method stub  
+					
+                  c.setTimeInMillis(System.currentTimeMillis());  //从1970,1,1后走过的毫秒
+                  PendingIntent pi = PendingIntent.getBroadcast(bootService.this, 0, intent1, 0);  
+                  AlarmManager am = (AlarmManager) getSystemService(Activity.ALARM_SERVICE);  
+                  am.set(AlarmManager.RTC_WAKEUP, c.getTimeInMillis(), pi);//设置闹钟  
+                 // am.setRepeating(AlarmManager.RTC_WAKEUP, c.getTimeInMillis(), (12*HOUR*1000), pi);//重复设置 
+                  am.setRepeating(AlarmManager.RTC_WAKEUP, c.getTimeInMillis(), (conf.getInt("refreshtime", 1)*HOUR*1000), pi);//重复设置 
+	}
+	
+	public void onDestory(){
+		super.onDestroy();
+	}
+	
+	@Override
+	public IBinder onBind(Intent intent) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+}

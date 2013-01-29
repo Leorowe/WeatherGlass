@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Weather4Wallpaper</string>
+    <string name="nolocate">Can not find position!Please input city name.</string>
+	<string name="cityNameDialog">Please input City Name:</string>
+	<string name="submit">Submit</string>
+	<string name="cancel">Cancel</string>
+	<string name="noTime">You have not set refresh time.</string>
+	
+	<string name="location">Find your city</string> 
+	<string name="changeWallpaper">Begin Changing Wallpaper</string>
+	<string name="stopChange">Stop Changing Wallpaper</string>
+	<string name="setRefreshTime">Set refresh time</string>
+	<string name="header1">Weather</string>
+	<string name="header2">Wallpaper</string>
+	<string name="findPosition">Find your position</string>
+	<string name="implySetTime">please set refresh time(/hour)</string>
+	<string name="openNetwork">Please open Network</string>
+	
+	<!-- Version 0.2 -->
+	<string name="version">Version 0.2</string>
+	<string name="AboutMeDialogTitle">About Me</string>
+	<string name="AboutContent1">   Have you ever been tired of the boring Wallpaper?
+	.Maybe you can try this Apps.The Wallpaper will automatically change according the weather.You have to keep network available,but it cost very little Network data...
+	  Connect your screen with weather.Color your Wallpaper.
+	if you have any feedback to me ,please click Menu->feedback  \n    Version 0.7</string>
+	<string name="Feedback">Feedback</string>
+	<string name="Exit">Exit</string>
+</resources>

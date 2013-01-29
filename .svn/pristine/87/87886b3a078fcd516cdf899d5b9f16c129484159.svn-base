@@ -1,0 +1,247 @@
+package com.leo.rowe;
+
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.Calendar;
+
+import android.app.Activity;
+import android.app.AlarmManager;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.app.PendingIntent;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.os.Bundle;
+import android.os.Handler;
+import android.text.InputType;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.feedback.NotificationType;
+import com.feedback.UMFeedbackService;
+import com.mobclick.android.MobclickAgent;
+
+public class Weather4WallpaperActivity extends Activity {
+    /** Called when the activity is first created. */
+	  Handler h;
+	 Runnable r;
+	 private Calendar c=null;
+	 private final static int HOUR=3600;
+	 SharedPreferences conf;
+	 SharedPreferences.Editor editor;
+	 int latitude;
+	 int longitude;
+	 URL url = null;
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.main);
+        MobclickAgent.onError(this);
+        MobclickAgent.update(this);
+        UMFeedbackService.enableNewReplyNotification(this, NotificationType.NotificationBar);
+        MobclickAgent.updateOnlineConfig(this);
+		c=Calendar.getInstance();
+        conf=getSharedPreferences("conf", MODE_PRIVATE);      
+        Button stopHandlerBt=(Button)findViewById(R.id.StopHandler);
+        stopHandlerBt.setOnClickListener(new OnClickListener() {		
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+                Intent intent = new Intent(Weather4WallpaperActivity.this,alarmReceiver.class);  
+                PendingIntent pi = PendingIntent.getBroadcast(Weather4WallpaperActivity.this, 0, intent, 0);  
+                AlarmManager am = (AlarmManager) getSystemService(Activity.ALARM_SERVICE);  
+                am.cancel(pi);  
+                Toast.makeText(Weather4WallpaperActivity.this,R.string.stopChange, Toast.LENGTH_SHORT).show();
+				
+			}
+		});
+        
+        Button startBt=(Button)findViewById(R.id.changeWallpaper);
+        startBt.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				Toast.makeText(Weather4WallpaperActivity.this, R.string.changeWallpaper,
+						Toast.LENGTH_SHORT).show();		
+				Intent intent1=new Intent(Weather4WallpaperActivity.this,alarmReceiver.class);
+		                  // TODO Auto-generated method stub  
+		                  c.setTimeInMillis(System.currentTimeMillis());  
+		                  PendingIntent pi = PendingIntent.getBroadcast(Weather4WallpaperActivity.this, 0, intent1, 0);  
+		                  AlarmManager am = (AlarmManager) getSystemService(Activity.ALARM_SERVICE);  
+		                  am.set(AlarmManager.RTC_WAKEUP, c.getTimeInMillis(), pi);
+		                 am.setRepeating(AlarmManager.RTC_WAKEUP, c.getTimeInMillis(), (conf.getInt("refreshtime", 1)*HOUR*1000), pi);//重复设置 
+		                  System.out.println("alarm have been set! Refresh Time" +conf.getInt("refreshtime", 1));
+			}
+		});
+        
+        Button getBt=(Button)findViewById(R.id.getlocation);
+        getBt.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				if(judgeNetwork()){
+					final EditText cityName=new EditText(Weather4WallpaperActivity.this);
+			        android.content.DialogInterface.OnClickListener cal = new DialogInterface.OnClickListener() {			
+					 
+			    		@Override
+			    		public void onClick(DialogInterface dialog, int which) {
+			    			switch (which) {
+			    			case Dialog.BUTTON_NEGATIVE:
+			    				Toast.makeText(Weather4WallpaperActivity.this, R.string.nolocate,
+			    						Toast.LENGTH_SHORT).show();		  
+			    				break;
+			    			case Dialog.BUTTON_POSITIVE: 							    				
+			    				try {
+			    					url = new URL("http://www.google.com/ig/api?hl=en&weather="+cityName.getText().toString());
+			    				} catch (MalformedURLException e1) {
+			    					// TODO Auto-generated catch block
+			    					e1.printStackTrace();
+			    				}
+			    				XMLPullHandler xpp=new XMLPullHandler(url);
+			    				String weatherCondition=xpp.getWeather();
+			    				if(weatherCondition!=null&&(weatherCondition.length()!=0)){
+			    					System.out.println(weatherCondition);
+			    					editor=conf.edit();
+			    					editor.putString("city", cityName.getText().toString());
+			    					editor.putString("way", "city");
+			    					editor.commit();
+			    					Toast.makeText(Weather4WallpaperActivity.this, "现在 "+cityName.getText().toString()+" 的天气是 ： "+weatherCondition,
+				    						Toast.LENGTH_SHORT).show();
+			    				}
+			    				else
+			    					Toast.makeText(Weather4WallpaperActivity.this,R.string.nolocate,
+				    						Toast.LENGTH_SHORT).show();
+		    			    	break;
+			    			}
+			    		}
+			    	};
+			        new AlertDialog.Builder(Weather4WallpaperActivity.this)
+			            .setTitle(R.string.cityNameDialog).setView(cityName)
+			        	.setPositiveButton(R.string.submit, cal)
+			            .setNegativeButton(R.string.cancel, cal).show();	
+			    	
+				}
+			}
+		});
+        
+        Button setRefreshTimeBt=(Button)findViewById(R.id.setRefreshTime);
+        setRefreshTimeBt.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				final EditText EtRefreshTime=new EditText(Weather4WallpaperActivity.this);
+				EtRefreshTime.setInputType(InputType.TYPE_CLASS_NUMBER);
+				EtRefreshTime.setHint(R.string.implySetTime);
+	        	android.content.DialogInterface.OnClickListener setRefreshtimeDialog = new DialogInterface.OnClickListener() {			
+					 
+		    		@Override
+		    		public void onClick(DialogInterface dialog, int which) {
+		    			switch (which) {
+		    			case Dialog.BUTTON_NEGATIVE:
+		    				Toast.makeText(Weather4WallpaperActivity.this,R.string.noTime,
+		    						Toast.LENGTH_LONG).show();		  
+		    				break;
+		    			case Dialog.BUTTON_POSITIVE://when users click submit	    				
+		    				String time=EtRefreshTime.getText().toString();
+		    				if(time!=null&&time.length()!=0){
+		    					editor=conf.edit();
+		    					editor.putInt("refreshtime", Integer.parseInt(EtRefreshTime.getText().toString()));
+		    					editor.commit();
+		    					Toast.makeText(Weather4WallpaperActivity.this, "Every "+EtRefreshTime.getText().toString()+"  hours, "+"Wallpaper will comunicate with Weather",
+			    						Toast.LENGTH_LONG).show();
+		    				}else{
+		    					Toast.makeText(Weather4WallpaperActivity.this,R.string.noTime,
+			    						Toast.LENGTH_LONG).show();	    					
+		    				}
+		    					
+		    					break;
+		    			}
+		    		}
+		    	};
+		    	
+				   new AlertDialog.Builder(Weather4WallpaperActivity.this)
+		            .setTitle(R.string.DialogTimeTitle).setView(EtRefreshTime)
+		        	.setPositiveButton(R.string.submit, setRefreshtimeDialog)
+		            .setNegativeButton(R.string.cancel, setRefreshtimeDialog).show();			
+				
+			}
+		});    
+}
+
+    public boolean judgeNetwork(){
+    	ConnectivityManager cwjManager=(ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);   
+    	NetworkInfo info = cwjManager.getActiveNetworkInfo();   
+    	if (info != null && info.isAvailable()){   
+    	//do  
+    		return true;
+    	}   
+    	else  
+    	{  
+    		System.out.println("there is no network!");
+    		return false;
+    	}  
+    }
+    
+    public void onResume(){
+    	super.onResume();
+    	 MobclickAgent.onResume(this);  
+    	
+    }
+    public void onPause(){
+    	super.onPause();
+    	MobclickAgent.onPause(this);  
+    }
+    public void onDestory(){
+    	super.onDestroy();
+    }
+    
+    public boolean onCreateOptionsMenu(Menu menu) {
+    menu.add(0, 0, 0, "反馈意见"); 
+    menu.add(0,1,0,"退出");
+    menu.add(0,2,9,"关于");
+    return true;
+    }
+     
+    public boolean onOptionsItemSelected(MenuItem item) {
+    switch (item.getItemId()) {
+           case 0: 
+        	   	UMFeedbackService.openUmengFeedbackSDK(this);
+    			return true;
+           case 1:
+        	    this.finish();
+        	    return true;
+           case 2:
+        	   android.content.DialogInterface.OnClickListener aboutMe = new DialogInterface.OnClickListener() {			
+					 
+		    		@Override
+		    		public void onClick(DialogInterface dialog, int which) {
+		    			switch (which) {
+		    			case Dialog.BUTTON_NEGATIVE:
+		    				break;
+		    			}
+		    		}
+		    	};
+		    	
+		    	TextView aboutmeText=new TextView(Weather4WallpaperActivity.this);
+		    	aboutmeText.setText("  厌倦了呆板的桌面壁纸了吗？Androider可不能那么死气沉沉，Color your wallpaper!  快来试试这套天气动态壁纸吧~。让你的手机壁纸和天气融为一体。给你一天好心情!");
+        	   new AlertDialog.Builder(Weather4WallpaperActivity.this)
+	            .setTitle("关于").setView(aboutmeText)
+	            .setNegativeButton(R.string.cancel, aboutMe).show();			
+           default:
+        	   return true;
+     }
+     }
+
+}

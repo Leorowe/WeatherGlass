@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Weather4Wallpaper</string>
+     <string name="nolocate">Can not find position!Please input city name.</string>
+	<string name="cityNameDialog">Please input City Name:</string>
+	<string name="submit">Submit</string>
+	<string name="cancel">Cancel</string>
+	<string name="noTime">You have not set refresh time.</string>
+	<string name="DialogTimeTitle">Set refresh time</string>  
+	
+	<string name="location">Find your city</string> 
+	<string name="changeWallpaper">connect wallpaper with Weather</string>
+	<string name="stopChange">Stop Wallpaper chatting with Weather</string>
+	<string name="setRefreshTime">Set refresh time</string>
+	<string name="header1">Weather</string>
+	<string name="header2">Wallpaper</string>
+	<string name="findPosition">Find your position</string>
+	<string name="implySetTime">please set refresh time(/hour)</string>
+	<string name="openNetwork">Please open Network</string>
+</resources>

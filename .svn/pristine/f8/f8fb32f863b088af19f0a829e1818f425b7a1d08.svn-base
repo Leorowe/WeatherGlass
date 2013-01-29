@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">天氣動態壁紙</string>
+    <string name="nolocate">找不到你的位置，請輸入城市的拼音</string>
+	<string name="cityNameDialog">請輸入所在城市的拼音</string>
+	<string name="submit">設置</string>
+	<string name="cancel">取消</string>
+	<string name="noTime">你還沒設置刷新的時間</string>
+	
+	<string name="location">定位您的位置</string> 
+	<string name="changeWallpaper">開啟定時更換壁紙</string>
+	<string name="stopChange">關閉定時更換壁紙</string>
+	<string name="setRefreshTime">設置刷新的時間</string>
+	<string name="header1">天氣</string>
+	<string name="header2">動態壁紙</string> 
+	<string name="findPosition">已經定位到您所在的城市</string>
+	<string name="implySetTime">設置刷新時間（單位為小時）</string>
+	<string name="openNetwork">請開啟移動網絡</string>
+	
+	<!-- Version 0.2 -->
+	<string name="version">Version 0.2</string>
+	<string name="AboutMeDialogTitle">關於</string>
+	<string name="AboutContent1">厭倦了呆板的桌面壁紙了嗎？ 
+	快來試試這套天氣動態壁紙吧~。讓你的手機壁紙和天氣融為一體。給你一天好心情!
+	如果你覺得這個App有任何需要改進的地方，可以點擊菜單，選擇反饋。 \n Version 0.3</string>
+	<string name="Feedback">反饋意見</string>
+	<string name="Exit">退出</string>
+</resources>

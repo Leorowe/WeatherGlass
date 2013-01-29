@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" 
+    android:background="@layout/bg"
+>
+
+   <AbsoluteLayout 
+       android:layout_width="fill_parent"
+       android:layout_height="wrap_content"
+       android:layout_marginBottom="20dip">
+         <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/header1"
+        android:textColor="#000000"
+        android:layout_x="45dip"
+        android:layout_y="40dip"
+        android:textSize="70dip" />
+      <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/header2"
+        android:textColor="#000000"
+        android:layout_x="100dip"
+        android:layout_y="120dip"
+        android:textSize="40dip" />
+   </AbsoluteLayout>
+  
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/getlocation"
+        android:text="@string/location"
+        android:width="250dip"
+        android:layout_gravity="center"
+        android:layout_marginBottom="14dip"
+        ></Button>
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/changeWallpaper"
+        android:text="@string/changeWallpaper"
+        android:layout_gravity="center"
+          android:layout_marginBottom="14dip"
+         android:width="250dip">
+        
+    </Button>
+     <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/StopHandler"
+        android:text="@string/stopChange"
+        android:layout_gravity="center"
+          android:layout_marginBottom="14dip"
+         android:width="250dip">    
+    </Button>
+     <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/setRefreshTime"
+        android:text="@string/setRefreshTime"
+        android:layout_gravity="center"
+          android:layout_marginBottom="14dip"
+         android:width="250dip">    
+    </Button>
+</LinearLayout>

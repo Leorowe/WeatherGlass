@@ -1,0 +1,49 @@
+package com.leo.rowe;
+
+import java.util.Calendar;
+
+import android.app.Activity;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.app.Service;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.os.IBinder;
+
+public class bootService extends Service {
+
+	private Calendar c=null;
+	private int HOUR=3600;
+	SharedPreferences conf;
+	SharedPreferences.Editor editor;
+	
+	public void onCreate(){
+		c=Calendar.getInstance();
+		System.out.println("bootService onCreate()!");
+	    conf=getSharedPreferences("conf", MODE_PRIVATE);
+		
+	}
+	public void onStart(Intent intent,int startId){
+		super.onStart(intent, startId);
+		System.out.println("bootService onStart!");
+		Intent intent1=new Intent(bootService.this,alarmReceiver.class);
+                  // TODO Auto-generated method stub  
+					
+                  c.setTimeInMillis(System.currentTimeMillis());  
+                  PendingIntent pi = PendingIntent.getBroadcast(bootService.this, 0, intent1, 0);  
+                  AlarmManager am = (AlarmManager) getSystemService(Activity.ALARM_SERVICE);  
+                  am.set(AlarmManager.RTC_WAKEUP, c.getTimeInMillis(), pi);
+                  am.setRepeating(AlarmManager.RTC_WAKEUP, c.getTimeInMillis(), (conf.getInt("refreshtime", 1)*HOUR*1000), pi);
+	}
+	
+	public void onDestory(){
+		super.onDestroy();
+	}
+	
+	@Override
+	public IBinder onBind(Intent intent) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+}

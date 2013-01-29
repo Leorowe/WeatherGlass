@@ -1,0 +1,236 @@
+package com.leo.rowe;
+
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.Calendar;
+
+import org.apache.http.util.LangUtils;
+
+import android.app.Activity;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
+import android.os.Bundle;
+import android.os.Handler;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
+
+public class Weather4WallpaperActivity extends Activity {
+    /** Called when the activity is first created. */
+	  Handler h;
+	 Runnable r;
+	 private Calendar c=null;
+	 private final static int HOUR=3600;
+	 SharedPreferences conf;
+	 SharedPreferences.Editor editor;
+	 int latitude;
+	 int longitude;
+	 URL url = null;
+	 String cityName=null;
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.main);
+		c=Calendar.getInstance();
+        //general a config file to store status
+        conf=getSharedPreferences("conf", MODE_PRIVATE);
+        
+        
+        
+        Button stopHandlerBt=(Button)findViewById(R.id.StopHandler);
+        stopHandlerBt.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+//				editor.putBoolean("run", true);
+                Intent intent = new Intent(Weather4WallpaperActivity.this,alarmReceiver.class);  
+                PendingIntent pi = PendingIntent.getBroadcast(Weather4WallpaperActivity.this, 0, intent, 0);  
+                AlarmManager am = (AlarmManager) getSystemService(Activity.ALARM_SERVICE);  
+                am.cancel(pi);  
+				
+			}
+		});
+        
+        Button startBt=(Button)findViewById(R.id.changeWallpaper);
+        startBt.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				System.out.println("ChangeWeather have been click!");
+				Intent intent1=new Intent(Weather4WallpaperActivity.this,alarmReceiver.class);
+				//which class will get the broadcast
+		                  // TODO Auto-generated method stub  
+							
+		                  c.setTimeInMillis(System.currentTimeMillis());  //从1970,1,1后走过的毫秒
+		                  PendingIntent pi = PendingIntent.getBroadcast(Weather4WallpaperActivity.this, 0, intent1, 0);  
+		                  AlarmManager am = (AlarmManager) getSystemService(Activity.ALARM_SERVICE);  
+		                  am.set(AlarmManager.RTC_WAKEUP, c.getTimeInMillis(), pi);//设置闹钟  
+		                //  am.setRepeating(AlarmManager.RTC_WAKEUP, c.getTimeInMillis(), (10*1000), pi);//重复设置 
+		                  am.setRepeating(AlarmManager.RTC_WAKEUP, c.getTimeInMillis(), (12*HOUR*1000), pi);//重复设置 
+		                  System.out.println("alarm have been set!");
+
+			}
+		});
+        
+        //GeoButton
+        Button getBt=(Button)findViewById(R.id.getlocation);
+        getBt.setOnClickListener(new OnClickListener() {
+        	
+			
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				LocationManager lm=(LocationManager)Weather4WallpaperActivity.this.getSystemService(Context.LOCATION_SERVICE);
+			//	Location ls=lm.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+				Location ls=lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+				if(ls!=null)		
+			    	System.out.println("last time location latitude is : "+ls.getLatitude()+"  Longitude is :"+ls.getLongitude());
+				lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, new getLocation());
+				
+			}
+		});
+        
+        //input CityName
+        final EditText cityNameEt=(EditText)findViewById(R.id.cityName);
+        Button checkCityBt=(Button)findViewById(R.id.checkCityBt);
+        checkCityBt.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				  cityName=cityNameEt.getText().toString();
+			        System.out.println("get cityName!"+cityName);		    	
+					try {
+						//http://www.google.com/ig/api?weather=Beijing
+						url = new URL("http://www.google.com/ig/api?weather="+cityName);
+					} catch (MalformedURLException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+					//test with Vaasa latitude and longitude
+					XMLPullHandler xpp=new XMLPullHandler(url);
+					if(xpp.getWeather()!=null&&(xpp.getWeather().length()!=0)){
+//						System.out.println(xpp.getWeather());
+						//write the Latitude and Longitude in conf
+						editor=conf.edit();
+						editor.putString("city", cityName);
+						editor.commit();
+					}				
+					else{
+						//can't find user city So users have to input the city name by themselves
+						System.out.println("null!!");
+						Toast.makeText(Weather4WallpaperActivity.this, R.string.nolocate , Toast.LENGTH_LONG).show();
+					}
+						
+			}
+		});
+      
+        
+     
+}
+
+    private  class getLocation implements LocationListener{
+
+		@Override
+		public void onLocationChanged(Location location) {
+			// TODO Auto-generated method stub
+			//fix bug when latitude or longitude greater than 100,no xml will return.
+//			System.out.println("the row data is :");
+//			double Flatitude=location.getLatitude();
+//			double  Flongitude=location.getLongitude();
+//			System.out.println("The longitude is "+Flatitude);
+//			System.out.println("the latitude is "+Flongitude);
+//			System.out.println("dealing ........");
+				 latitude=(int)(location.getLatitude()*1000000);
+				 longitude=(int)(location.getLongitude()*1000000);
+			System.out.println("The latitude is "+latitude);
+			System.out.println("the longitude is "+longitude);
+			
+			try {
+				//url = new URL("http://www.google.com/ig/api?hl=en&weather=,,,63107204,21651467");
+				//url = new URL("http://www.google.com/ig/api?hl=en&weather=,,,"+String.valueOf(longitude)+","+String.valueOf(latitude));
+				//System.out.println("http://www.google.com/ig/api?hl=en&weather=,,,"+String.valueOf(latitude)+","+String.valueOf(longitude));
+				url = new URL("http://www.google.com/ig/api?hl=en&weather=,,,"+String.valueOf(latitude)+","+String.valueOf(longitude));
+			} catch (MalformedURLException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			//test with Vaasa latitude and longitude
+			XMLPullHandler xpp=new XMLPullHandler(url);
+			if(xpp.getWeather()!=null&&(xpp.getWeather().length()!=0)){
+				//System.out.println(xpp.getWeather());
+				//write the Latitude and Longitude in conf
+				editor=conf.edit();
+				editor.putInt("longitude", longitude);
+				editor.putInt("latitude", latitude);
+				editor.commit();
+			}				
+			else{
+				//can't find user city So users have to input the city name by themselves
+				System.out.println("null!!");
+				Toast.makeText(Weather4WallpaperActivity.this, R.string.nolocate , Toast.LENGTH_LONG).show();
+			}
+				
+			
+		}
+
+		@Override
+		public void onProviderDisabled(String provider) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void onProviderEnabled(String provider) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void onStatusChanged(String provider, int status, Bundle extras) {
+			// TODO Auto-generated method stub
+			
+		}
+    	
+    }
+    
+    public void onDestory(){
+    	super.onDestroy();
+    }
+
+}
+   
+   
+    
+	
+    
+    
+    
+//    private void initLocation(Context mContext){  
+//        //获得系统及服务的  LocationManager 对象  这个代码就这么写 不用考虑  
+//        lm = (LocationManager) mContext.getSystemService(Context.LOCATION_SERVICE);  
+//          
+//        //首先检测 通过network 能否获得location对象  
+//        //如果获得了location对象 则更新tv  
+//        if (startLocation(networkProvider,mContext)) {  
+//            updateLocation(location,mContext);  
+//        }else   
+//            //通过gps 能否获得location对象  
+//            //如果获得了location对象 则更新tv  
+//            if(startLocation(GpsProvider,mContext)){  
+//            updateLocation(location,mContext);  
+//        }else{  
+//            //如果上面两种方法都不能获得location对象 则显示下列信息  
+//            Toast.makeText(this, "没有打开GPS设备", 5000).show();  
+//        }  
+//    }
